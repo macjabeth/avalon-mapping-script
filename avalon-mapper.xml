@@ -644,14 +644,14 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
     </TriggerPackage>
     <TimerPackage>
         <TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
-            <name>mudlet mapper</name>
+            <name>mapper</name>
             <script></script>
             <command></command>
             <packageName></packageName>
             <time>00:00:00.000</time>
-            <Timer isActive="no" isFolder="no" isTempTimer="no" isOffsetTimer="no">
+            <Timer isActive="yes" isFolder="no" isTempTimer="no" isOffsetTimer="no">
                 <name>check for updates periodically</name>
-                <script>mmp.checkforupdate() -- disabled for now, may implement later on</script>
+                <script>mmp.checkforupdate()</script>
                 <command></command>
                 <packageName></packageName>
                 <time>01:00:00.000</time>
@@ -2374,6 +2374,16 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
+local newversion = '1.0.1'
+if mmp.version and mmp.version ~= newversion then
+  if not mmp.game then
+    mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
+  else
+    mmp.echo(&quot;Mapper script updated - thanks! You don't need to restart.&quot;)
+  end
+end
+mmp.version = newversion
+
 function mmp.startup()
   if not mmp.firstRun then return end
 
@@ -3680,6 +3690,11 @@ end</script>
     ]], '', true)
     setUnderline(false)
     echo '\n'
+    echo '  '
+    setUnderline(true)
+    echoLink('Check for mapper &amp; map updates', 'mmp.echo(&quot;Checking...&quot;) mmp.checkforupdate()', '', true)
+    setUnderline(false)
+    echo '\n'
   end
 
   -- see if we can do anything with the name
@@ -3723,6 +3738,9 @@ end</script>
   if not input then
     if not mmp.roomexists(mmp.currentroom) then
       mmp.echo(mmp.currentroom .. &quot; doesn't seem to be mapped yet.&quot;)
+      mmp.echo('Stuff you can do:')
+      echo '  '
+      echoLink('Check for all updates', 'mmp.echo(&quot;Checking...&quot;) mmp.checkforupdate()', '')
       echo '\n'
     else
       input = mmp.currentroom
@@ -6004,9 +6022,9 @@ end</script>
                     <name>mmp_grabenvid</name>
                     <packageName></packageName>
                     <script>function mmp_grabenvid()
-  if not mmp.envids[gmcp.Room.Info.environment] then
-    mmp.envids[gmcp.Room.Info.environment] = getRoomEnv(mmp.currentroom)
-    mmp.echo(string.format(&quot;Remembered environment %s as %d&quot;, gmcp.Room.Info.environment, mmp.envids[gmcp.Room.Info.environment]))
+  if not mmp.envids[protocol.environment] then
+    mmp.envids[protocol.environment] = getRoomEnv(mmp.currentroom)
+    mmp.echo(string.format('Remembered environment %s as %d', protocol.environment, mmp.envids[protocol.environment]))
   end
 end
 
@@ -6030,16 +6048,13 @@ function mmp.getUnknownEnvs()
   for i = 1, maxid do
     if mmp.roomexists(i) then
       if not table.contains(mmp.envids, getRoomEnv(i)) and not table.contains(missing, getRoomEnv(i)) then
-        mmp.echo(string.format(&quot;Missing env %d from room %d ('%s' in '%s')&quot;,
-          tostring(getRoomEnv(i)), i, tostring(getRoomName(i)), tostring(mmp.areatabler[getRoomArea(i)])))
+        mmp.echo(string.format(&quot;Missing env %d from room %d ('%s' in '%s')&quot;, tostring(getRoomEnv(i)), i, tostring(getRoomName(i)), tostring(mmp.areatabler[getRoomArea(i)])))
         missing[i] = getRoomEnv(i)
       end
     end
   end
 end</script>
-                    <eventHandlerList>
-                        <string>gmcp.Room.Info</string>
-                    </eventHandlerList>
+                    <eventHandlerList/>
                 </Script>
             </ScriptGroup>
             <ScriptGroup isActive="yes" isFolder="yes">
@@ -6105,6 +6120,392 @@ end</script>
   mmp.maplooktimer = tempTimer(tonumber(delay) or 4, [[centerview(mmp.currentroom); mmp.maplooktimer = nil]])
 end</script>
                     <eventHandlerList/>
+                </Script>
+            </ScriptGroup>
+            <ScriptGroup isActive="yes" isFolder="yes">
+                <name>check for map updates</name>
+                <packageName></packageName>
+                <script></script>
+                <eventHandlerList/>
+                <Script isActive="yes" isFolder="no">
+                    <name>mmp_download_file</name>
+                    <packageName></packageName>
+                    <script>function mmp_downloaded_file(_, filename)
+  if not io.exists(filename) then
+    return
+  end
+
+  if filename == tostring(mmp.mapperfile) then -- mapper script version
+    mmp.checkingupdates = false
+
+    local f, s = io.open(filename)
+    if f then
+      s = f:read('*l'):trim()
+      io.close(f)
+    end
+
+    if s ~= tostring(mmp.version) then
+      mmp.newmapperversion = s
+      mmp.retrievechangelog()
+    end
+  elseif filename == tostring(mmp.changelogfile) then -- changelog for the mapper script
+    mmp.checkingupdates = false
+
+    local f, s, changelog = io.open(filename)
+    if f then
+      changelog = f:read('*a')
+      io.close(f)
+    end
+
+    mmp.echon('')
+    echoLink('The mapper script was updated! Would you like to download the update? Click here if so.', 'mmp.downloadmapperscript()', 'Changelog for the latest (' .. tostring(mmp.version) .. ' -&gt; ' .. tostring(mmp.newmapperversion) .. ') update:\n' .. changelog, true)
+  elseif filename == mmp.crowdchangelogfile then -- changelog for the crowdmap
+    local f, s = io.open(filename)
+    if f then
+      s = f:read('*a')
+      io.close(f)
+    end
+
+    -- CROWD MAPS ARE NOT IMPLEMENTED YET - Maybe in the future though, eh?
+
+    -- make environment
+    local env = {} -- add functions you know are safe here
+
+    -- run code under environment [Lua 5.1]
+    local function run(untrusted_code)
+      if untrusted_code:byte(1) == 27 then
+        return nil, 'binary bytecode prohibited'
+      end
+      local untrusted_function, message = loadstring(untrusted_code)
+      if not untrusted_function then
+        return nil, message
+      end
+      setfenv(untrusted_function, env)
+      return pcall(untrusted_function)
+    end
+
+    run(s)
+
+    mmp.crowdchangelog = env.changelog
+
+    mmp.echon('The crowdmap map was ')
+    setUnderline(true)
+    echoLink('updated', '', 'New version: ' .. tostring(mmp.newversion) .. ', previous version: ' .. (mmp.oldversion or '(none)'), true)
+    setUnderline(false)
+    echo(' (')
+    setUnderline(true)
+    echoLink('see full changelog', 'mmp.showcrowdchangelog()', 'View the full changelog for mappers', true)
+    setUnderline(false)
+    echo('). Latest improvement is: ' .. tostring(mmp.crowdchangelog and mmp.crowdchangelog[#mmp.crowdchangelog] or '?') .. '.\n')
+
+    mmp.downloadcrowdmap(mmp.newversion)
+  elseif filename == mmp.crowdmapfile then -- crowdmap map
+    mmp.echo('Map downloaded, loading it in...')
+
+    local tmp = getRoomUserData(1, 'gotoMapping')
+    local oldmaptable = {}
+
+    if tmp ~= '' then
+      oldmaptable = yajl.to_value(tmp)
+    end
+
+    local ok = loadMap(filename)
+
+    if ok then
+      if mmp.settings.waterwalk then
+        mmp.enableWaterWalk()
+      else
+        mmp.disableWaterWalk()
+      end
+
+      mmp.echo('Map loaded fine - enjoy!')
+
+      tmp = getRoomUserData(1, 'gotoMapping')
+      local newmaptable = {}
+
+      if tmp ~= '' then
+        newmaptable = yajl.to_value(tmp)
+      end
+
+      for k, v in pairs(oldmaptable) do
+        newmaptable[k] = v
+      end
+      setRoomUserData(1, 'gotoMapping', yajl.to_string(newmaptable))
+      mmp.echo('Marks from the old map migrated successfully.')
+
+      raiseEvent('mmapper updated map')
+    else
+      mmp.echon('Map failed to load - you need to have the mapper open. Please open it, and then ')
+      echoLink('click here', [[
+        local tmp = getRoomUserData(1, &quot;gotoMapping&quot;)
+        local oldmaptable = {}
+        if tmp ~= &quot;&quot; then
+          oldmaptable = yajl.to_value(tmp)
+        end
+
+        local ok = loadMap(']] .. filename .. [[')
+        if ok then
+          if mmp.settings.waterwalk then mmp.enableWaterWalk() else mmp.disableWaterWalk() end
+
+          mmp.echo(&quot;Map loaded successfully!&quot;)
+
+          tmp = getRoomUserData(1, &quot;gotoMapping&quot;)
+          local newmaptable = {}
+          if tmp ~= &quot;&quot; then
+            newmaptable = yajl.to_value(tmp)
+          end
+          for k,v in pairs(oldmaptable) do newmaptable[k] = v end
+          setRoomUserData(1, &quot;gotoMapping&quot;, yajl.to_string(newmaptable))
+          mmp.echo(&quot;Marks from the old map migrated successfully.&quot;)
+          raiseEvent(&quot;mmapper updated map&quot;)
+        else mmp.echo(&quot;Nope, didn't work. Open the map and try again?&quot;) end
+      ]], 'Click here to try loading the map again')
+      echo(' to try loading it in again.\n')
+    end
+  elseif filename == tostring(mmp.downloadedscript) then -- new mapper script xml downloaded
+    mmp.checkingupdates = false
+
+    mmp.echo(&quot;Your mapper script was downloaded to '&quot; .. filename .. &quot;' - uninstall the current copy and install the new one now!&quot;)
+  elseif filename == tostring(mmp.mapfile) then -- map version #, either Avalon's or crowd
+    mmp.checkingupdates = false
+
+    local function needupdate(currentmd5, oldmd5)
+      if not mmp.settings.crowdmap then
+        mmp.echon('The games map was ')
+        echoLink('updated', '', 'New MD5: ' .. tostring(currentmd5) .. ', previous MD5: ' .. (oldmd5 or '(none)'), true)
+        echo(&quot; - you should update yours! Go to Settings -&gt; Mapper tab and click on the button there. Once you've updated, &quot;)
+        echoLink('click here', &quot;mmp.updatedmap('&quot; .. currentmd5 .. &quot;')&quot;, 'Click here to quiet the update reminder')
+        echo(' to remove the reminder.')
+      else
+        mmp.newversion, mmp.oldversion = currentmd5, oldmd5
+        mmp.retrievecrowdchangelog()
+      end
+    end
+
+    local f, s = io.open(filename)
+    if f then
+      s = f:read('*a')
+      io.close(f)
+    end
+    local currentmd5 = string.match(s, '([a-z0-9]+)  map%.xml')
+
+    -- using crowdsourced map
+    if not currentmd5 then
+      currentmd5 = s:trim()
+    end
+
+    os.remove(filename)
+
+    -- never checked yet?
+    if not io.exists(getMudletHomeDir() .. '/map downloads/current') then
+      needupdate(currentmd5)
+      return
+    end
+
+    -- otherwise read old file and check
+    local f, s = io.open(getMudletHomeDir() .. '/map downloads/current')
+    if f then
+      s = f:read('*a')
+      io.close(f)
+    end
+
+    if s ~= currentmd5 then
+      needupdate(currentmd5, s)
+    end
+  end
+end</script>
+                    <eventHandlerList>
+                        <string>sysDownloadDone</string>
+                    </eventHandlerList>
+                </Script>
+                <Script isActive="yes" isFolder="no">
+                    <name>check for updates</name>
+                    <packageName></packageName>
+                    <script>local downloadfolder = getMudletHomeDir() .. '/map downloads/'
+local whereisit
+
+-- this should get called at start and every hour after that
+function mmp.checkforupdate()
+  if not mmp.game or mmp.checkingupdates then
+    return
+  end
+
+  local game = mmp.game or 'avalon'
+  mmp.mapfile = downloadfolder .. 'MD5'
+  mmp.mapperfile = downloadfolder .. 'mapper'
+
+  if not downloadFile then
+    mmp.echo(&quot;Your version of Mudlet doesn't support downloading files - please upgrade to 2.0+&quot;)
+  else
+    if not lfs.attributes(downloadfolder) then
+      if lfs and lfs.mkdir then
+        local t, s = lfs.mkdir(downloadfolder)
+        if not t and s ~= 'File exists' then
+          mmp.echo(&quot;Couldn't make the '&quot; .. downloadfolder .. &quot;' folder; &quot; .. s)
+          return
+        end
+      else
+        mmp.echo(&quot;Sorry, but you need LuaFileSystem (lfs) installed, or have the '&quot; .. downloadfolder .. &quot;' folder exist.&quot;)
+        return
+      end
+    end
+
+    if mmp.settings.crowdmap and mmp.game and mmp.game == 'avalon' then
+      -- downloadFile(mmp.mapfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/version.txt')
+    elseif mmp.settings.updatemap then
+      downloadFile(mmp.mapfile, 'http://www.avalon-rpg.com/maps/MD5SUM')
+    end
+
+    downloadFile(mmp.mapperfile, 'http://macjabeth.github.io/avalon-mapping-script/downloads/version')
+    mmp.checkingupdates = true
+  end
+end
+
+-- called by the user when the map is updated to register the fact that it was
+function mmp.updatedmap(currentmd5)
+  assert(currentmd5, 'need md5 sum to write to file')
+
+  local f, err = io.open(downloadfolder .. 'current', 'w')
+  if not f then
+    return mmp.echo(&quot;Couldn't write to the update file, because: &quot; .. err)
+  end
+  f:write(currentmd5)
+  f:close()
+
+  local t = {'Go you for updating!', 'Thanks for updating the map!', 'Alright, map updated!'}
+  mmp.echo(t[math.random(1, #t)])
+end
+
+-- downloads the latest changelog for the mapper if it was updated
+function mmp.retrievechangelog()
+  mmp.changelogfile = downloadfolder .. 'changelog'
+
+  downloadFile(mmp.changelogfile, 'http://macjabeth.github.io/avalon-mapping-script/downloads/changelog')
+end
+
+function mmp.retrievecrowdchangelog()
+  mmp.crowdchangelogfile = downloadfolder .. 'crowdchangelogfile'
+
+  downloadFile(mmp.crowdchangelogfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/changelog.txt')
+end
+
+-- downloads the public crowdsources map!
+function mmp.downloadmapperscript()
+  local downloadlocationfile = downloadfolder .. 'savepath'
+  local downloadlocation
+  local exists = lfs.attributes
+
+  -- somewhat complicated thing to nicely deal with all scenarios.
+  if not exists(downloadlocationfile) then
+    downloadlocation = whereisit()
+    if not downloadlocation then
+      return
+    end
+  end
+
+  if not downloadlocation then
+    local f, s = io.open(downloadlocationfile)
+    if f then
+      downloadlocation = f:read('*a')
+      io.close(f)
+    end
+
+    if not exists(downloadlocation) then
+      downloadlocation = whereisit()
+      if not downloadlocation or not exists(downloadlocation) then
+        return
+      end
+    end
+  end
+
+  mmp.downloadedscript = downloadlocation .. '/avalon-mapper.xml'
+  downloadFile(mmp.downloadedscript, 'http://macjabeth.github.io/avalon-mapping-script/downloads/avalon-mapper.xml')
+
+  local f, err = io.open(downloadlocationfile, 'w')
+  if not f then
+    return mmp.echo(&quot;Couldn't write to the location file, because: &quot; .. err)
+  end
+  f:write(downloadlocation)
+  f:close()
+  mmp.echo('Okay, downloading the mapper script...')
+end
+
+function mmp.downloadcrowdmap(newversion)
+  mmp.crowdmapfile = downloadfolder .. 'crowdmap'
+
+  local f, err = io.open(downloadfolder .. 'current', 'w')
+  if not f then
+    return mmp.echo(&quot;Couldn't write to the update file, because: &quot; .. err)
+  end
+  f:write(newversion)
+  f:close()
+
+  downloadFile(mmp.crowdmapfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/map')
+
+  mmp.echo('Downloading the latest crowdmap...')
+end
+
+function mmp.showcrowdchangelog()
+  mmp.echo('Public map changelog:')
+
+  if not mmp.crowdchangelog then
+    mmp.echo('(none yet)')
+    return
+  end
+
+  for k, v in ipairs(mmp.crowdchangelog) do
+    cecho(string.format('  %s) %s\n', k, v:gsub('\t', '     ')))
+  end
+end
+
+whereisit = function()
+  local path = invokeFileDialog(false, 'Where should we save the file? Select a folder and click Open')
+
+  if path == '' then
+    return nil
+  else
+    return path
+  end
+end</script>
+                    <eventHandlerList/>
+                    <Script isActive="yes" isFolder="no">
+                        <name>mmp_checkupdatestart</name>
+                        <packageName></packageName>
+                        <script>function mmp_checkupdatestart(...)
+  if mmp.checkforupdatetimer then
+    killTimer(mmp.checkforupdatetimer)
+  end
+  mmp.checkforupdatetimer = tempTimer(math.random(3, 10), mmp.checkforupdate)
+end
+
+function mmp.changeUpdateMap()
+  if mmp.settings.updatemap then
+    mmp.echo('Will check for new map updates from your MUD.')
+    enableTimer 'Check for updates periodically'
+    mmp_checkupdatestart()
+  else
+    mmp.echo(&quot;Won't check for new map updates from your MUD.&quot;)
+    disableTimer 'Check for updates periodically'
+    if mmp.checkforupdatetimer then
+      killTimer('mmp.checkforupdatetimer')
+    end
+  end
+end</script>
+                        <eventHandlerList>
+                            <string>mmp logged in</string>
+                        </eventHandlerList>
+                    </Script>
+                </Script>
+                <Script isActive="yes" isFolder="no">
+                    <name>mmp_see_dl_errors</name>
+                    <packageName></packageName>
+                    <script>-- this should be off by default
+function mmp_see_dl_errors(...)
+  display{...}
+end</script>
+                    <eventHandlerList>
+                        <string>sysDownloadError</string>
+                    </eventHandlerList>
                 </Script>
             </ScriptGroup>
             <Script isActive="yes" isFolder="no">
