@@ -1136,6 +1136,13 @@ centerview(mmp.currentroom)</script>
                         <regex>^(?:rlk|room link) ?(\d+)? (\w+)( one)?$</regex>
                     </Alias>
                     <Alias isActive="yes" isFolder="no">
+                        <name>merge rooms</name>
+                        <script>mmp.merge_rooms()</script>
+                        <command></command>
+                        <packageName></packageName>
+                        <regex>^merge rooms$</regex>
+                    </Alias>
+                    <Alias isActive="yes" isFolder="no">
                         <name>delete a room</name>
                         <script>-- want the current room, but we're lost
 if not matches[2] and (not mmp.currentroom or not mmp.roomexists(mmp.currentroom)) then
