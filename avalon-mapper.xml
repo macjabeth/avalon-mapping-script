@@ -6128,7 +6128,7 @@ end</script>
                 <script></script>
                 <eventHandlerList/>
                 <Script isActive="yes" isFolder="no">
-                    <name>mmp_download_file</name>
+                    <name>mmp_downloaded_file</name>
                     <packageName></packageName>
                     <script>function mmp_downloaded_file(_, filename)
   if not io.exists(filename) then
@@ -6166,7 +6166,7 @@ end</script>
       io.close(f)
     end
 
-    -- CROWD MAPS ARE NOT IMPLEMENTED YET - Maybe in the future though, eh?
+    -- CROWD MAPS ARE NOT IMPLEMENTED - Maybe in the future though, eh?
 
     -- make environment
     local env = {} -- add functions you know are safe here
