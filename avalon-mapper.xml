@@ -350,8 +350,12 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         </regexCodePropertyList>
                     </Trigger>
                     <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
-                        <name>traps</name>
-                        <script>mmp.failpath()</script>
+                        <name>salvo trap</name>
+                        <script>tempLineTrigger(1, 1, [[
+  if not (line == 'You set off an arrow trap but the shaft is deflected by your shield.') then
+    mmp.failpath()
+  end
+]])</script>
                         <triggerType>0</triggerType>
                         <conditonLineDelta>0</conditonLineDelta>
                         <mStayOpen>0</mStayOpen>
@@ -524,7 +528,7 @@ raiseEvent(&quot;onNewRoom&quot;)</script>
                     <colorTriggerFgColor>#ffff00</colorTriggerFgColor>
                     <colorTriggerBgColor>#000000</colorTriggerBgColor>
                     <regexCodeList>
-                        <string>^([\w\s,-]+)\.$</string>
+                        <string>^([\w\s,'-]+)\.$</string>
                         <string>FG7BG0</string>
                     </regexCodeList>
                     <regexCodePropertyList>
@@ -1782,7 +1786,8 @@ end</script>
                 </Alias>
                 <Alias isActive="yes" isFolder="no">
                     <name>start mapping</name>
-                    <script>mmp.start_mapping(matches[2] or protocol.area)</script>
+                    <script>mmp.start_mapping(matches[2] or protocol.area)
+mmp.ignore_area_diff = matches[2] and true or false</script>
                     <command></command>
                     <packageName></packageName>
                     <regex>^start mapping ?(.+)?$</regex>
@@ -2383,7 +2388,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.3'
+local newversion = '1.0.4'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
@@ -4757,7 +4762,6 @@ end</script>
                     <packageName></packageName>
                     <script>mmp = mmp or {}
 
-local move_queue = mmp.move_queue
 local room_detected, exits_detected, random_move
 
 local exitmap = {
@@ -4843,6 +4847,7 @@ function mmp.set_room(roomID)
     mmp.previousroom = mmp.currentroom
     mmp.currentroom = roomID
   end
+  -- handle room changes
   if getRoomName(mmp.currentroom) ~= mmp.currentroomname then
     mmp.previousname = mmp.currentroomname
     mmp.previousexits = mmp.currentexits
@@ -4852,6 +4857,10 @@ function mmp.set_room(roomID)
     for i = 13, #stubmap do
       mmp.currentexits[stubmap[i]] = tonumber(getRoomUserData(mmp.currentroom, 'exit ' .. stubmap[i]))
     end
+  end
+  -- handle area changes
+  if getRoomArea(mmp.currentroom) ~= mmp.currentarea then
+    mmp.ignore_area_diff = false
   end
   mmp.currentarea = getRoomArea(mmp.currentroom)
   mmp.currentareaname = getRoomAreaName(mmp.currentarea)
@@ -5064,6 +5073,9 @@ local function create_room(name, exits, dir, coords)
       setRoomUserData(newID, &quot;indoors&quot;, &quot;y&quot;)
       mmp.echo(&quot;Set room to be indoors.&quot;)
     end
+    if not (mmp.currentareaname == protocol.area) and not mmp.ignore_area_diff then
+      mmp.echo(&quot;We've entered a new area: &quot; .. protocol.area)
+    end
     echo'\n'
     if dir then connect_rooms(mmp.currentroom, newID, dir) end
     setRoomCoordinates(newID, unpack(coords))
@@ -5149,7 +5161,7 @@ end
 
 local function move_map()
   -- tries to move the mmp to the next room
-  local move = table.remove(move_queue, 1)
+  local move = table.remove(mmp.move_queue, 1)
   if move or random_move then
     local exits = (mmp.currentroom and getRoomExits(mmp.currentroom)) or {}
     -- check handling of custom exits here
@@ -5187,17 +5199,17 @@ local function capture_move_cmd(dir, priority)
   dir = string.lower(dir)
   if table.contains(exitmap, dir) or dir:starts('sprint ') then
     if priority then
-      table.insert(move_queue, 1, exitmap[dir] or dir)
+      table.insert(mmp.move_queue, 1, exitmap[dir] or dir)
     else
-      table.insert(move_queue, exitmap[dir] or dir)
+      table.insert(mmp.move_queue, exitmap[dir] or dir)
     end
   elseif mmp.currentroom then
     local special = getSpecialExitsSwap(mmp.currentroom) or {}
     if special[dir] then
       if priority then
-        table.insert(move_queue, 1, dir)
+        table.insert(mmp.move_queue, 1, dir)
       else
-        table.insert(move_queue, dir)
+        table.insert(mmp.move_queue, dir)
       end
     end
   end
@@ -5315,7 +5327,7 @@ function mmp.start_mapping(area_name)
     error('Start Mapping Error: No room detected!')
   end
   local rooms
-  move_queue = {}
+  mmp.move_queue = {}
   area_name = area_name ~= '' and area_name or nil
   if mmp.currentarea and not area_name then
     local areas = getAreaTableSwap()
@@ -5329,7 +5341,7 @@ function mmp.start_mapping(area_name)
   find_area(area_name)
   rooms = find_room(mmp.currentroomname, mmp.currentarea)
   if table.is_empty(rooms) then
-    if mmp.currentroom then
+    if mmp.currentroom and table.contains(getRooms(), protocol.room) then
       mmp.set_area(area_name)
     else
       create_room(mmp.currentroomname, mmp.currentexits, nil, {0, 0, 0})
@@ -5340,7 +5352,7 @@ function mmp.start_mapping(area_name)
 end
 
 function mmp.clear_moves()
-  move_queue = {}
+  mmp.move_queue = {}
   mmp.echo('Move queue cleared.')
 end
 
@@ -5523,10 +5535,10 @@ function mmp.eventHandler(event, ...)
     exits_detected = false
     capture_room_exits(protocol.exits)
   elseif event == 'onMoveFail' then
-    table.remove(move_queue, 1)
+    table.remove(mmp.move_queue, 1)
   elseif event == 'onRandomMove' then
     random_move = true
-    move_queue = {}
+    mmp.move_queue = {}
   elseif event == 'onForcedMove' then
     capture_move_cmd(arg[1], arg[2] == 'true')
   elseif event == 'onNewRoom' then
