@@ -1,3 +1,5 @@
 ### Fixed
-- Door handling on up/down/in/out exits.
-- Rooms not being updated when having no environment.
+- Salvo traps interrupting the mapping process.
+- Apostrophes not being matched in room names.
+- `start mapping` improvements when dealing with new areas.
+- `move_queue` issues fecking up the mapping proces.
