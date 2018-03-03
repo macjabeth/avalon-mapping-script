@@ -6365,12 +6365,12 @@ function mmp.checkforupdate()
     end
 
     if mmp.settings.crowdmap and mmp.game and mmp.game == 'avalon' then
-      -- downloadFile(mmp.mapfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/version.txt')
+      -- downloadFile(mmp.mapfile, 'https://macjabeth.github.io/AvalonCrowdmap/Map/version.txt')
     elseif mmp.settings.updatemap then
       downloadFile(mmp.mapfile, 'http://www.avalon-rpg.com/maps/MD5SUM')
     end
 
-    downloadFile(mmp.mapperfile, 'http://macjabeth.github.io/avalon-mapping-script/downloads/version')
+    downloadFile(mmp.mapperfile, 'https://macjabeth.github.io/avalon-mapping-script/downloads/version')
     mmp.checkingupdates = true
   end
 end
@@ -6394,13 +6394,13 @@ end
 function mmp.retrievechangelog()
   mmp.changelogfile = downloadfolder .. 'changelog'
 
-  downloadFile(mmp.changelogfile, 'http://macjabeth.github.io/avalon-mapping-script/downloads/changelog')
+  downloadFile(mmp.changelogfile, 'https://macjabeth.github.io/avalon-mapping-script/downloads/changelog')
 end
 
 function mmp.retrievecrowdchangelog()
   mmp.crowdchangelogfile = downloadfolder .. 'crowdchangelogfile'
 
-  downloadFile(mmp.crowdchangelogfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/changelog.txt')
+  downloadFile(mmp.crowdchangelogfile, 'https://macjabeth.github.io/AvalonCrowdmap/Map/changelog.txt')
 end
 
 -- downloads the public crowdsources map!
@@ -6433,7 +6433,7 @@ function mmp.downloadmapperscript()
   end
 
   mmp.downloadedscript = downloadlocation .. '/avalon-mapper.xml'
-  downloadFile(mmp.downloadedscript, 'http://macjabeth.github.io/avalon-mapping-script/downloads/avalon-mapper.xml')
+  downloadFile(mmp.downloadedscript, 'https://macjabeth.github.io/avalon-mapping-script/downloads/avalon-mapper.xml')
 
   local f, err = io.open(downloadlocationfile, 'w')
   if not f then
@@ -6454,7 +6454,7 @@ function mmp.downloadcrowdmap(newversion)
   f:write(newversion)
   f:close()
 
-  downloadFile(mmp.crowdmapfile, 'http://macjabeth.github.io/AvalonCrowdmap/Map/map')
+  downloadFile(mmp.crowdmapfile, 'https://macjabeth.github.io/AvalonCrowdmap/Map/map')
 
   mmp.echo('Downloading the latest crowdmap...')
 end
