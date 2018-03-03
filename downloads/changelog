@@ -1,2 +1,5 @@
 ### Added
-- Automatic updates; hooray!
+- More move failure triggers.
+
+### Fixed
+- Rooms with no exits being given exits of the previous room.

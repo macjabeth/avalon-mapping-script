@@ -101,7 +101,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>Some warding inherent in the surroundings denies your sorcerous-mist form.</string>
+                    <string>To your horror, you set off a salvo trap.</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>7</integer>
@@ -408,6 +408,30 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         <colorTriggerBgColor>#000000</colorTriggerBgColor>
                         <regexCodeList>
                             <string>Some warding inherent in the surroundings denies your sorcerous-mist form.</string>
+                            <string>Your ethereal spirit is prevented from moving</string>
+                            <string>Some warding inherent in the surroundings denies your mist form.</string>
+                        </regexCodeList>
+                        <regexCodePropertyList>
+                            <integer>3</integer>
+                            <integer>2</integer>
+                            <integer>3</integer>
+                        </regexCodePropertyList>
+                    </Trigger>
+                    <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                        <name>woodlands</name>
+                        <script>mmp.failpath()</script>
+                        <triggerType>0</triggerType>
+                        <conditonLineDelta>0</conditonLineDelta>
+                        <mStayOpen>0</mStayOpen>
+                        <mCommand></mCommand>
+                        <packageName></packageName>
+                        <mFgColor>#ff0000</mFgColor>
+                        <mBgColor>#ffff00</mBgColor>
+                        <mSoundFile></mSoundFile>
+                        <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                        <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                        <regexCodeList>
+                            <string>Between the boughs of the ancient woodland is a thick tangle of holly and briar. You cannot pass within.</string>
                         </regexCodeList>
                         <regexCodePropertyList>
                             <integer>3</integer>
@@ -2388,7 +2412,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.4'
+local newversion = '1.0.6'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
@@ -5543,6 +5567,7 @@ function mmp.eventHandler(event, ...)
     capture_move_cmd(arg[1], arg[2] == 'true')
   elseif event == 'onNewRoom' then
     room_detected = true
+    protocol.exits = {} -- sometimes it doesn't get updated
   elseif event == 'onNewExits' then
     exits_detected = true
   elseif event == 'sysDataSendRequest' then
