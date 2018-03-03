@@ -144,7 +144,7 @@ protocol.environment = matches[4]</script>
                     <colorTriggerFgColor>#000000</colorTriggerFgColor>
                     <colorTriggerBgColor>#000000</colorTriggerBgColor>
                     <regexCodeList>
-                        <string>brief (.+) in (.+) - surveys as '(.+)'</string>
+                        <string>brief (.+) in (.+) - surveys as '(.*)'</string>
                     </regexCodeList>
                     <regexCodePropertyList>
                         <integer>1</integer>
@@ -153,6 +153,8 @@ protocol.environment = matches[4]</script>
                 <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                     <name>exits</name>
                     <script>local to_exit = { no='n',so='s',ea='e',we='w',['do']='d',ou='o' }
+
+protocol.exits = {}
 
 for exit, stat in matches[2]:gmatch('(%D+)(%d)') do
   exit = to_exit[exit] or exit
@@ -1134,6 +1136,13 @@ centerview(mmp.currentroom)</script>
                         <command></command>
                         <packageName></packageName>
                         <regex>^(?:rlk|room link) ?(\d+)? (\w+)( one)?$</regex>
+                    </Alias>
+                    <Alias isActive="yes" isFolder="no">
+                        <name>merge rooms</name>
+                        <script>mmp.merge_rooms()</script>
+                        <command></command>
+                        <packageName></packageName>
+                        <regex>^merge rooms$</regex>
                     </Alias>
                     <Alias isActive="yes" isFolder="no">
                         <name>delete a room</name>
@@ -2374,7 +2383,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.2'
+local newversion = '1.0.3'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
@@ -4763,8 +4772,7 @@ local exitmap = {
   u = 'up',
   d = 'down',
   ['in'] = 'in',
-  o = 'out',
-  out = 'out'
+  o = 'out'
 }
 
 local short = {}
@@ -4867,12 +4875,7 @@ local function add_door(roomID, dir, status)
   elseif stubmap[dir] &gt; 12 and not tonumber(getRoomUserData(roomID, 'exit ' .. dir)) then
     setRoomUserData(roomID, 'stub' .. dir, stubmap[dir])
   end
-  -- check handling of custom exits here
-  if stubmap[dir] &gt;= 9 then
-    setRoomUserData(roomID, 'door ' .. dir, tostring(status))
-  else
-    setDoor(roomID, short[dir], status)
-  end
+  setDoor(roomID, table.contains({'up', 'down', 'in', 'out'}, dir) and dir or short[dir], status)
 end
 
 local function check_doors(roomID, exits)
@@ -5528,7 +5531,6 @@ function mmp.eventHandler(event, ...)
     capture_move_cmd(arg[1], arg[2] == 'true')
   elseif event == 'onNewRoom' then
     room_detected = true
-    protocol.exits = {}
   elseif event == 'onNewExits' then
     exits_detected = true
   elseif event == 'sysDataSendRequest' then
@@ -6128,7 +6130,7 @@ end</script>
                 <script></script>
                 <eventHandlerList/>
                 <Script isActive="yes" isFolder="no">
-                    <name>mmp_download_file</name>
+                    <name>mmp_downloaded_file</name>
                     <packageName></packageName>
                     <script>function mmp_downloaded_file(_, filename)
   if not io.exists(filename) then
@@ -6166,7 +6168,7 @@ end</script>
       io.close(f)
     end
 
-    -- CROWD MAPS ARE NOT IMPLEMENTED YET - Maybe in the future though, eh?
+    -- CROWD MAPS ARE NOT IMPLEMENTED - Maybe in the future though, eh?
 
     -- make environment
     local env = {} -- add functions you know are safe here

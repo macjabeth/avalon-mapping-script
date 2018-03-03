@@ -1,1 +1,3 @@
-
+### Fixed
+- Door handling on up/down/in/out exits.
+- Rooms not being updated when having no environment.
