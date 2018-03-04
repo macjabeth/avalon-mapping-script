@@ -1,5 +1,11 @@
-### Added
-- More move failure triggers.
+Alongside the notable changes listed below, the first issue for the mapper has been raised on GitHub. Feel free to go take a look, and perhaps add a PR.
+
+### Changed
+- More lenient matching pattern for InO prompt tag.
+- Darker colour for room eye area/environment info.
 
 ### Fixed
-- Rooms with no exits being given exits of the previous room.
+- Room names with double-quotes not being captured correctly.
+
+### Added
+- Locate (sixthsense) trigger.

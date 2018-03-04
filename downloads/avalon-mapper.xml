@@ -81,7 +81,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>\[InO=(\S+)\] </string>
+                    <string>\[?InO=(\S+)\]?</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>1</integer>
@@ -101,7 +101,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>To your horror, you set off a salvo trap.</string>
+                    <string>\[?InO=(\S+)\]?</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>7</integer>
@@ -536,8 +536,8 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                     <name>room name (eye)</name>
                     <script>if protocol and protocol.room == multimatches[1][2] then
   selectString('.', 1) replace(' -')
-  cecho(' &lt;white&gt;(&lt;a_brown&gt;' .. protocol.environment .. '&lt;white&gt;)')
-  cecho(' &lt;white&gt;(&lt;green&gt;' .. protocol.area .. '&lt;white&gt;)')
+  cecho(' &lt;a_darkwhite&gt;(&lt;a_brown&gt;' .. protocol.environment .. '&lt;a_darkwhite&gt;)')
+  cecho(' &lt;a_darkwhite&gt;(&lt;green&gt;' .. protocol.area .. '&lt;a_darkwhite&gt;)')
 end
 
 raiseEvent(&quot;onNewRoom&quot;)</script>
@@ -552,7 +552,7 @@ raiseEvent(&quot;onNewRoom&quot;)</script>
                     <colorTriggerFgColor>#ffff00</colorTriggerFgColor>
                     <colorTriggerBgColor>#000000</colorTriggerBgColor>
                     <regexCodeList>
-                        <string>^([\w\s,'-]+)\.$</string>
+                        <string>^([\w\s,'&quot;-]+)\.$</string>
                         <string>FG7BG0</string>
                     </regexCodeList>
                     <regexCodePropertyList>
@@ -669,6 +669,28 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
                         </regexCodePropertyList>
                     </Trigger>
                 </TriggerGroup>
+                <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                    <name>locate</name>
+                    <script>mmp.locateAndEcho(multimatches[2][3], multimatches[2][2])</script>
+                    <triggerType>0</triggerType>
+                    <conditonLineDelta>0</conditonLineDelta>
+                    <mStayOpen>0</mStayOpen>
+                    <mCommand></mCommand>
+                    <packageName></packageName>
+                    <mFgColor>#ff0000</mFgColor>
+                    <mBgColor>#ffff00</mBgColor>
+                    <mSoundFile></mSoundFile>
+                    <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                    <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                    <regexCodeList>
+                        <string>An image of </string>
+                        <string>^An image of (.+) appears; the location &quot;(.+)&quot; forming a fleeting backdrop to the vision\.$</string>
+                    </regexCodeList>
+                    <regexCodePropertyList>
+                        <integer>2</integer>
+                        <integer>1</integer>
+                    </regexCodePropertyList>
+                </Trigger>
             </TriggerGroup>
         </TriggerGroup>
     </TriggerPackage>
@@ -2412,10 +2434,10 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.6'
+local newversion = '1.0.7'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
-    mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
+    mmp.echo(&quot;Mapper script updated - Thanks! The mapper hasn't been initialised properly, though - so please reconnect, if you could.&quot;)
   else
     mmp.echo(&quot;Mapper script updated - thanks! You don't need to restart.&quot;)
   end
