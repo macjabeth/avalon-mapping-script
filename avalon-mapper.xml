@@ -2434,10 +2434,10 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.6'
+local newversion = '1.0.7'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
-    mmp.echo(&quot;Mapper script updated - Thanks! I don't know what game are you connected to, though - so please reconnect, if you could.&quot;)
+    mmp.echo(&quot;Mapper script updated - Thanks! The mapper hasn't been initialised properly, though - so please reconnect, if you could.&quot;)
   else
     mmp.echo(&quot;Mapper script updated - thanks! You don't need to restart.&quot;)
   end
