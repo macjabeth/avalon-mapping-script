@@ -55,7 +55,7 @@ protocol.balance = not (multimatches[2][2]:find('y', 1, true) or multimatches[2]
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>^\w+, you are most welcome to the Land of Avalon\.$</string>
+                    <string>\[?InO=([^\s\]]+)\]?</string>
                     <string>\d+m ([A-Za-z]*)</string>
                 </regexCodeList>
                 <regexCodePropertyList>
@@ -65,7 +65,7 @@ protocol.balance = not (multimatches[2][2]:find('y', 1, true) or multimatches[2]
             </Trigger>
             <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                 <name>interiors</name>
-                <script>protocol.indoors = not (matches[2]:find('OPEN', 1, true)) and true or false
+                <script>protocol.indoors = matches[2] == 'X-IN' and true or false
 
 selectCaptureGroup(1)
 setFgColor(255,255,255)
@@ -81,7 +81,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>\[?InO=(\S+)\]?</string>
+                    <string>\[?InO=([^\s\]]+)\]?</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>1</integer>
@@ -101,7 +101,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>\[?InO=(\S+)\]?</string>
+                    <string>\[?InO=(\S*?)\]?</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>7</integer>
@@ -435,6 +435,28 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         </regexCodeList>
                         <regexCodePropertyList>
                             <integer>3</integer>
+                        </regexCodePropertyList>
+                    </Trigger>
+                    <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                        <name>no permission</name>
+                        <script>mmp.failpath()</script>
+                        <triggerType>0</triggerType>
+                        <conditonLineDelta>0</conditonLineDelta>
+                        <mStayOpen>0</mStayOpen>
+                        <mCommand></mCommand>
+                        <packageName></packageName>
+                        <mFgColor>#ff0000</mFgColor>
+                        <mBgColor>#ffff00</mBgColor>
+                        <mSoundFile></mSoundFile>
+                        <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                        <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                        <regexCodeList>
+                            <string>Guards emerge from unseen alcoves and bar your progress. You cannot enter the commodity stores of</string>
+                            <string>^You are ejected from .+ for trespassing on unauthorised areas\.$</string>
+                        </regexCodeList>
+                        <regexCodePropertyList>
+                            <integer>2</integer>
+                            <integer>1</integer>
                         </regexCodePropertyList>
                     </Trigger>
                 </TriggerGroup>
@@ -2434,7 +2456,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.7'
+local newversion = '1.0.8'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! The mapper hasn't been initialised properly, though - so please reconnect, if you could.&quot;)
@@ -5495,8 +5517,8 @@ function mmp.find_me(name, exits, dir)
   -- tries to locate the player using the current room name and exits, and if provided, direction of movement
   -- if direction of movement is given, narrows down possibilities using previous room info
   local check = dir and mmp.currentroom and table.contains(exitmap, dir)
-  name = name or mmp.currentroomname
-  exits = exits or mmp.currentexits
+  name = name or protocol.room
+  exits = exits or keystolist(protocol.exits)
   local rooms = find_room(name)
   local match_IDs = {}
   for k, v in pairs(rooms) do
