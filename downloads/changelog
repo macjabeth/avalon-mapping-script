@@ -1,11 +1,6 @@
-Alongside the notable changes listed below, the first issue for the mapper has been raised on GitHub. Feel free to go take a look, and perhaps add a PR.
-
 ### Changed
-- More lenient matching pattern for InO prompt tag.
-- Darker colour for room eye area/environment info.
-
-### Fixed
-- Room names with double-quotes not being captured correctly.
+- Improved interior detection.
+- Improved find_me script.
 
 ### Added
-- Locate (sixthsense) trigger.
+- Failure triggers for entering restricted locations without permission.
