@@ -34,9 +34,11 @@ mmp.game = &quot;avalon&quot;</script>
                 <regexCodeList>
                     <string>^\w+, you are most welcome to the Land of Avalon\.$</string>
                     <string>You are most welcome to the Land of Avalon.</string>
+                    <string>Congratulations! You have now created your very own character on Avalon.</string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>1</integer>
+                    <integer>3</integer>
                     <integer>3</integer>
                 </regexCodePropertyList>
             </Trigger>
@@ -343,7 +345,7 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         <colorTriggerFgColor>#000000</colorTriggerFgColor>
                         <colorTriggerBgColor>#000000</colorTriggerBgColor>
                         <regexCodeList>
-                            <string>You are breathing deeply. You trip and fall in your hurry.</string>
+                            <string>You have not the strength to run any more.</string>
                         </regexCodeList>
                         <regexCodePropertyList>
                             <integer>3</integer>
@@ -457,6 +459,26 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         <regexCodePropertyList>
                             <integer>2</integer>
                             <integer>1</integer>
+                        </regexCodePropertyList>
+                    </Trigger>
+                    <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                        <name>no fording</name>
+                        <script>mmp.failpath()</script>
+                        <triggerType>0</triggerType>
+                        <conditonLineDelta>0</conditonLineDelta>
+                        <mStayOpen>0</mStayOpen>
+                        <mCommand></mCommand>
+                        <packageName></packageName>
+                        <mFgColor>#ff0000</mFgColor>
+                        <mBgColor>#ffff00</mBgColor>
+                        <mSoundFile></mSoundFile>
+                        <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                        <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                        <regexCodeList>
+                            <string>Your steed refuses to set foot in the water. You may need to dismount and lead it.</string>
+                        </regexCodeList>
+                        <regexCodePropertyList>
+                            <integer>3</integer>
                         </regexCodePropertyList>
                     </Trigger>
                 </TriggerGroup>
@@ -600,9 +622,7 @@ raiseEvent(&quot;onNewRoom&quot;)</script>
                 <regexCodePropertyList/>
                 <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                     <name>truediscern</name>
-                    <script>echo '  ('
-mmp.echonums(multimatches[2][2], multimatches[3][2])
-echo ')'</script>
+                    <script>mmp.locateAndEcho(multimatches[2][2], nil, multimatches[3][2])</script>
                     <triggerType>0</triggerType>
                     <conditonLineDelta>1</conditonLineDelta>
                     <mStayOpen>0</mStayOpen>
@@ -644,6 +664,28 @@ echo ')'</script>
                         <integer>3</integer>
                     </regexCodePropertyList>
                     <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                        <name>stop (prescience)</name>
+                        <script>setTriggerStayOpen('prescience', 0)</script>
+                        <triggerType>0</triggerType>
+                        <conditonLineDelta>0</conditonLineDelta>
+                        <mStayOpen>0</mStayOpen>
+                        <mCommand></mCommand>
+                        <packageName></packageName>
+                        <mFgColor>#ff0000</mFgColor>
+                        <mBgColor>#ffff00</mBgColor>
+                        <mSoundFile></mSoundFile>
+                        <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                        <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                        <regexCodeList>
+                            <string>You can hold the prescient trance no longer and raise your head frustratedly, knowing more existed to discern...</string>
+                            <string></string>
+                        </regexCodeList>
+                        <regexCodePropertyList>
+                            <integer>3</integer>
+                            <integer>7</integer>
+                        </regexCodePropertyList>
+                    </Trigger>
+                    <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                         <name>location</name>
                         <script>echo((' '):rep(80 - #line))
 echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
@@ -668,28 +710,6 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
                             <integer>1</integer>
                         </regexCodePropertyList>
                     </Trigger>
-                    <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
-                        <name>stop (prescience)</name>
-                        <script>setTriggerStayOpen('prescience', 0)</script>
-                        <triggerType>0</triggerType>
-                        <conditonLineDelta>0</conditonLineDelta>
-                        <mStayOpen>0</mStayOpen>
-                        <mCommand></mCommand>
-                        <packageName></packageName>
-                        <mFgColor>#ff0000</mFgColor>
-                        <mBgColor>#ffff00</mBgColor>
-                        <mSoundFile></mSoundFile>
-                        <colorTriggerFgColor>#000000</colorTriggerFgColor>
-                        <colorTriggerBgColor>#000000</colorTriggerBgColor>
-                        <regexCodeList>
-                            <string>You can hold the prescient trance no longer and raise your head frustratedly, knowing more existed to discern...</string>
-                            <string>^I see .+ at &quot;(.+)&quot; in (.+)\.$</string>
-                        </regexCodeList>
-                        <regexCodePropertyList>
-                            <integer>3</integer>
-                            <integer>7</integer>
-                        </regexCodePropertyList>
-                    </Trigger>
                 </TriggerGroup>
                 <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                     <name>locate</name>
@@ -707,6 +727,28 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
                     <regexCodeList>
                         <string>An image of </string>
                         <string>^An image of (.+) appears; the location &quot;(.+)&quot; forming a fleeting backdrop to the vision\.$</string>
+                    </regexCodeList>
+                    <regexCodePropertyList>
+                        <integer>2</integer>
+                        <integer>1</integer>
+                    </regexCodePropertyList>
+                </Trigger>
+                <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                    <name>sensor demon</name>
+                    <script>mmp.locateAndEcho(multimatches[2][3], multimatches[2][2])</script>
+                    <triggerType>0</triggerType>
+                    <conditonLineDelta>0</conditonLineDelta>
+                    <mStayOpen>0</mStayOpen>
+                    <mCommand></mCommand>
+                    <packageName></packageName>
+                    <mFgColor>#ff0000</mFgColor>
+                    <mBgColor>#ffff00</mBgColor>
+                    <mSoundFile></mSoundFile>
+                    <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                    <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                    <regexCodeList>
+                        <string>The sensor-demon informs you that </string>
+                        <string>^The sensor-demon informs you that (.+) has moved to (.+)\.$</string>
                     </regexCodeList>
                     <regexCodePropertyList>
                         <integer>2</integer>
@@ -2058,10 +2100,14 @@ elseif size == 'big' then
   })
 
   mmp.echo(&quot;Set the map size to big - it'll cover all of the space on the right that game text isn't using. You'll want to call this alias again if you resize the window to update.&quot;)
+elseif size == 'hide' and mapper then
+  mapper:hide()
+elseif size == 'show' and mapper then
+  mapper:show()
 end</script>
                     <command></command>
                     <packageName></packageName>
-                    <regex>^(small|big|biggest)map(?: (\d+))?$</regex>
+                    <regex>^(small|big|biggest|hide|show)map(?: (\d+))?$</regex>
                 </Alias>
                 <Alias isActive="yes" isFolder="no">
                     <name>^make maps$</name>
@@ -2456,7 +2502,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.8'
+local newversion = '1.0.9'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! The mapper hasn't been initialised properly, though - so please reconnect, if you could.&quot;)
@@ -3241,31 +3287,33 @@ end</script>
     return
   end
 
-  echo '\n'
-  if table.size(t) == 1 then
-    local k, v = next(t)
-    cecho('&lt;red&gt;From your knowledge, that room is in &lt;orange_red&gt;' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. '&lt;red&gt;.')
-  else
-    local k, v = next(t)
-    local areas = {}
-    if type(k) == 'number' then
-      for k, _ in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
-      end
+  if not area then
+    echo '\n'
+    if table.size(t) == 1 then
+      local k, v = next(t)
+      cecho('&lt;red&gt;From your knowledge, that room is in &lt;orange_red&gt;' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. '&lt;red&gt;.')
     else
-      for _, k in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+      local k, v = next(t)
+      local areas = {}
+      if type(k) == 'number' then
+        for k, _ in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
+      else
+        for _, k in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
       end
-    end
 
-    local flattened_areas = {}
-    for k, _ in pairs(areas) do
-      if k ~= '' then
-        flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+      local flattened_areas = {}
+      for k, _ in pairs(areas) do
+        if k ~= '' then
+          flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+        end
       end
-    end
 
-    cecho('&lt;red&gt;From your knowledge, that room might be in &lt;orange_red&gt;' .. table.concat(flattened_areas, ', or ') .. '&lt;red&gt;.')
+      cecho('&lt;red&gt;From your knowledge, that room might be in &lt;orange_red&gt;' .. table.concat(flattened_areas, ', or ') .. '&lt;red&gt;.')
+    end
   end
 
   if person then
@@ -3301,31 +3349,32 @@ end</script>
     return
   end
 
-  --echo&quot;\n&quot;
-  if table.size(t) == 1 then
-    local k, v = next(t)
-    cecho('&lt;red&gt;  (' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. ')')
-  else
-    local k, v = next(t)
-    local areas = {}
-    if type(k) == 'number' then
-      for k, _ in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
-      end
+  if not area then
+    if table.size(t) == 1 then
+      local k, v = next(t)
+      cecho('&lt;red&gt;  (' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. ')')
     else
-      for _, k in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+      local k, v = next(t)
+      local areas = {}
+      if type(k) == 'number' then
+        for k, _ in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
+      else
+        for _, k in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
       end
-    end
 
-    local flattened_areas = {}
-    for k, _ in pairs(areas) do
-      if k ~= '' then
-        flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+      local flattened_areas = {}
+      for k, _ in pairs(areas) do
+        if k ~= '' then
+          flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+        end
       end
-    end
 
-    cecho('&lt;red&gt; (' .. table.concat(flattened_areas, ', ') .. ')')
+      cecho('&lt;red&gt; (' .. table.concat(flattened_areas, ', ') .. ')')
+    end
   end
 
   if person then
@@ -3357,31 +3406,32 @@ end</script>
     return
   end
 
-  --echo&quot;\n&quot;
-  if table.size(t) == 1 then
-    local k, v = next(t)
-    cecho('&lt;red&gt; in ' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. '.')
-  else
-    local k, v = next(t)
-    local areas = {}
-    if type(k) == 'number' then
-      for k, _ in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
-      end
+  if not area then
+    if table.size(t) == 1 then
+      local k, v = next(t)
+      cecho('&lt;red&gt; in ' .. mmp.cleanAreaName(mmp.areatabler[getRoomArea(type(k) == 'number' and k or v)] or '?') .. '.')
     else
-      for _, k in pairs(t) do
-        areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+      local k, v = next(t)
+      local areas = {}
+      if type(k) == 'number' then
+        for k, _ in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
+      else
+        for _, k in pairs(t) do
+          areas[mmp.areatabler[getRoomArea(k)] or '?'] = true
+        end
       end
-    end
 
-    local flattened_areas = {}
-    for k, _ in pairs(areas) do
-      if k ~= '' then
-        flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+      local flattened_areas = {}
+      for k, _ in pairs(areas) do
+        if k ~= '' then
+          flattened_areas[#flattened_areas + 1] = mmp.cleanAreaName(k)
+        end
       end
-    end
 
-    cecho('&lt;red&gt; in ' .. table.concat(flattened_areas, ', ') .. '.')
+      cecho('&lt;red&gt; in ' .. table.concat(flattened_areas, ', ') .. '.')
+    end
   end
 
   echo '  ('
@@ -4065,6 +4115,11 @@ function speedwalking(num)
     if #table.n_union(mmp.getareacontinents(getRoomArea(mmp.previousroom or 0)), mmp.getareacontinents(getRoomArea(num))) ~= #mmp.getareacontinents(getRoomArea(num)) then
       raiseEvent('mmapper changed continent')
     end
+    -- check indoors status
+    if protocol.indoors and getRoomUserData(num, &quot;indoors&quot;) == '' then
+      setRoomUserData(num, &quot;indoors&quot;, &quot;y&quot;)
+      mmp.echo(&quot;Updated room to be indoors.&quot;)
+    end
     -- check for environment update, if we have environments mapped out
     if mmp.envids[protocol.environment] and mmp.envids[protocol.environment] ~= getRoomEnv(num) then
       setRoomEnv(num, mmp.envids[protocol.environment])
@@ -4141,7 +4196,7 @@ end</script>
   if mmp.movetimer then killTimer(mmp.movetimer) end
   if mmp.settings.slowwalk then return end
 
-  mmp.movetimer = tempTimer(getNetworkLatency() + (time or 0.5), function()
+  mmp.movetimer = tempTimer(getNetworkLatency() + (time or 0.75), function()
     mmp.movetimer = false
     mmp.move()
   end)
@@ -4197,7 +4252,7 @@ end</script>
     cecho(string.format('&lt;red&gt;(&lt;maroon&gt;%d - &lt;dark_slate_grey&gt;swim %s&lt;red&gt;)', #mmp.speedWalkDir - speedWalkCounter + 1, mmp.speedWalkDir[speedWalkCounter]:gsub('sprint ', ''):gsub('gallop ', '')))
   end
 
-  mmp.setmovetimer(2.5)
+  mmp.setmovetimer()
 end</script>
                         <eventHandlerList/>
                     </Script>
@@ -4235,7 +4290,7 @@ function mmp.unlockDoor()
 
   mmp.unlocked_door = true
 
-  mmp.setmovetimer(getNetworkLatency() + 0.5)
+  mmp.setmovetimer(1)
 end</script>
                         <eventHandlerList/>
                     </Script>
@@ -5651,19 +5706,14 @@ end</script>
                 <Script isActive="yes" isFolder="no">
                     <name>clearspecials</name>
                     <packageName></packageName>
-                    <script>-- cleanup function to remove the temp special exit we made - only way to remove specials in Mudlet atm is by clearing them all
-function mmp.clearspecials(ignorerooms)
+                    <script>-- cleanup function to remove the temp special exit we made
+function mmp.clearspecials(deleterooms)
   local t = getSpecialExits(mmp.currentroom)
-  clearSpecialExits(mmp.currentroom)
 
   for connectingroom, exits in pairs(t) do
-    if not table.contains(ignorerooms, connectingroom) then -- don't re-add this one back as it's our temp
+    if table.contains(deleterooms, connectingroom) then -- delete the special exits linking to this room
       for command, locked in pairs(exits) do
-        --debug echo: mmp.echo(&quot;need to re-link this room to &quot;..connectingroom..&quot; with &quot;..command..&quot; that is &quot;..(locked == &quot;1&quot; and &quot;locked&quot; or &quot;unlocked&quot;)..&quot;.&quot;)
-        addSpecialExit(mmp.currentroom, connectingroom, command)
-        if locked == '1' then
-          lockSpecialExit(mmp.currentroom, connectingroom, command, true)
-        end
+        removeSpecialExit(mmp.currentroom, command)
       end
     end
   end
