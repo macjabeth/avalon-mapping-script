@@ -1,6 +1,7 @@
 ### Changed
-- Improved interior detection.
-- Improved find_me script.
+- Tweaked speedwalk delays.
 
 ### Added
-- Failure triggers for entering restricted locations without permission.
+- More triggers.
+- Hide/show options for mapper display.
+- Indoor status updates.
