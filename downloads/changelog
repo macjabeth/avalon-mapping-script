@@ -1,7 +1,7 @@
 ### Changed
-- Tweaked speedwalk delays.
+- Allow different InO placement + gag if it isn't the prompt.
+- Smallmap size
+- Room creation timer.
 
 ### Added
-- More triggers.
-- Hide/show options for mapper display.
-- Indoor status updates.
+- Room hook event for scripts.
