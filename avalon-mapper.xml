@@ -57,7 +57,7 @@ protocol.balance = not (multimatches[2][2]:find('y', 1, true) or multimatches[2]
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>\[?InO=([^\s\]]+)\]?</string>
+                    <string>^\w+, you are most welcome to the Land of Avalon\.$</string>
                     <string>\d+m ([A-Za-z]*)</string>
                 </regexCodeList>
                 <regexCodePropertyList>
@@ -71,7 +71,9 @@ protocol.balance = not (multimatches[2][2]:find('y', 1, true) or multimatches[2]
 
 selectCaptureGroup(1)
 setFgColor(255,255,255)
-resetFormat()</script>
+resetFormat()
+
+if not isPrompt() then deleteLine() end</script>
                 <triggerType>0</triggerType>
                 <conditonLineDelta>0</conditonLineDelta>
                 <mStayOpen>0</mStayOpen>
@@ -103,7 +105,7 @@ resetFormat()</script>
                 <colorTriggerFgColor>#000000</colorTriggerFgColor>
                 <colorTriggerBgColor>#000000</colorTriggerBgColor>
                 <regexCodeList>
-                    <string>\[?InO=(\S*?)\]?</string>
+                    <string></string>
                 </regexCodeList>
                 <regexCodePropertyList>
                     <integer>7</integer>
@@ -455,9 +457,11 @@ tempLineTrigger(1,1,[[if line == '' then deleteLine() end]])</script>
                         <regexCodeList>
                             <string>Guards emerge from unseen alcoves and bar your progress. You cannot enter the commodity stores of</string>
                             <string>^You are ejected from .+ for trespassing on unauthorised areas\.$</string>
+                            <string>^Guards of \w+ mounted on flying eagles surround you suddenly, affording no time to think or escape\. You are pressured down, out of the skies, and left deposited unceremoniously on the ground outside of the main city gates\.$</string>
                         </regexCodeList>
                         <regexCodePropertyList>
                             <integer>2</integer>
+                            <integer>1</integer>
                             <integer>1</integer>
                         </regexCodePropertyList>
                     </Trigger>
@@ -829,7 +833,7 @@ end
 mmp.settings:setOption(matches[3], val)</script>
                     <command></command>
                     <packageName></packageName>
-                    <regex>^mconfig( (\w+) (.*))?$</regex>
+                    <regex>^mpconfig( (\w+) (.*))?$</regex>
                 </Alias>
                 <Alias isActive="yes" isFolder="no">
                     <name>add a room label</name>
@@ -2076,10 +2080,10 @@ if size == 'biggest' then
   mmp.echo('Map size set to pretty damn big.')
 elseif size == 'small' then
   mapper = Geyser.Mapper:new({
-    x = '70%',
+    x = '75%',
     y = 0,
-    width = '28%',
-    height = '50%'
+    width = '23%',
+    height = '45%'
   })
   mmp.echo('Map size set to comfortable.')
 elseif size == 'big' then
@@ -2502,7 +2506,7 @@ speedWalkCounter = 0
 mmp.speedWalkPath = mmp.speedWalkPath or {}
 mmp.speedWalkDir = mmp.speedWalkDir or {}
 
-local newversion = '1.0.9'
+local newversion = '1.1.0'
 if mmp.version and mmp.version ~= newversion then
   if not mmp.game then
     mmp.echo(&quot;Mapper script updated - Thanks! The mapper hasn't been initialised properly, though - so please reconnect, if you could.&quot;)
@@ -4138,6 +4142,8 @@ function speedwalking(num)
     oldnum = num
   end
 
+  raiseEvent('room_hook') -- use this event in your scripts!
+
   if not mmp.autowalking then
     return
   end
@@ -4652,6 +4658,7 @@ end</script>
                         <packageName></packageName>
                         <script>-- track whenever we need to use the skies when we get outside!
 function mmapper_avalon_went_outside()
+  if true then return end -- disabled until further implementation
   if not mmp.autowalking or mmp.game ~= 'avalon' or (mmp.currentroom == mmp.speedWalkPath[#mmp.speedWalkPath]) or protocol.indoors then
     return
   end
@@ -5125,7 +5132,9 @@ local function check_room(roomID, name, exits)
   if name ~= getRoomName(roomID) then
     return false
   end
-  if not exits then return true end
+  if not exits then
+    return true
+  end
   local t_exits = table.union(getRoomExits(roomID), getRoomStubs(roomID))
   -- check handling of custom exits here
   for i = 13, #stubmap do
@@ -5171,56 +5180,71 @@ local function create_room(name, exits, dir, coords)
   -- links with other rooms as appropriate
   -- links to adjacent rooms in direction of exits if in simple mode
   if mmp.editing then
-    echo'\n' mmp.echo('Created New Room: ' .. name)
-    local newID = createRoomID()
-    addRoom(newID)
-    setRoomArea(newID, mmp.currentarea)
-    setRoomName(newID, name)
-    for k, v in ipairs(exits) do
-      if stubmap[v] then
-        if stubmap[v] &lt;= 10 then
-          setExitStub(newID, stubmap[v], true)
-        else
-          -- check handling of custom exits here
-          setRoomUserData(newID, 'stub' .. v, stubmap[v])
-        end
-      end
+    if mmp.create_room_timer then
+      killTimer(mmp.create_room_timer)
     end
-    -- check environment
-    if mmp.envids[protocol.environment] then
-      setRoomEnv(newID, mmp.envids[protocol.environment])
-      mmp.echo('Set room environment to: ' .. protocol.environment)
-    end
-    -- check indoors status
-    if protocol.indoors and getRoomUserData(newID, &quot;indoors&quot;) == '' then
-      setRoomUserData(newID, &quot;indoors&quot;, &quot;y&quot;)
-      mmp.echo(&quot;Set room to be indoors.&quot;)
-    end
-    if not (mmp.currentareaname == protocol.area) and not mmp.ignore_area_diff then
-      mmp.echo(&quot;We've entered a new area: &quot; .. protocol.area)
-    end
-    echo'\n'
-    if dir then connect_rooms(mmp.currentroom, newID, dir) end
-    setRoomCoordinates(newID, unpack(coords))
-    local stretched = false
-    if mmp.settings.stretchmap and table.size(getRoomsByPosition(mmp.currentarea, unpack(coords))) &gt; 1 then
-      speedwalking(newID); stretched = true
-      stretch_map(dir, unpack(coords))
-    end
-    if mmp.settings.mode == 'simple' then
-      local x, y, z = unpack(coords)
-      local dx, dy, dz, rooms
-      for k, v in ipairs(exits) do
-        if v ~= dir then
-          dx, dy, dz = unpack(coordmap[stubmap[v]])
-          rooms = getRoomsByPosition(mmp.currentarea, x + dx, y + dy, z + dz)
-          if table.size(rooms) == 1 then
-            connect_rooms(newID, rooms[0], v)
+    mmp.create_room_timer =
+      tempTimer(
+      0,
+      function()
+        echo '\n'
+        mmp.echo('Created New Room: ' .. name)
+        local newID = createRoomID()
+        addRoom(newID)
+        setRoomArea(newID, mmp.currentarea)
+        setRoomName(newID, name)
+        for k, v in ipairs(exits) do
+          if stubmap[v] then
+            if stubmap[v] &lt;= 10 then
+              setExitStub(newID, stubmap[v], true)
+            else
+              -- check handling of custom exits here
+              setRoomUserData(newID, 'stub' .. v, stubmap[v])
+            end
           end
         end
+        -- check environment
+        if mmp.envids[protocol.environment] then
+          setRoomEnv(newID, mmp.envids[protocol.environment])
+          mmp.echo('Set room environment to: ' .. protocol.environment)
+        end
+        -- check indoors status
+        if protocol.indoors and getRoomUserData(newID, 'indoors') == '' then
+          setRoomUserData(newID, 'indoors', 'y')
+          mmp.echo('Set room to be indoors.')
+        end
+        if not (mmp.currentareaname == protocol.area) and not mmp.ignore_area_diff then
+          mmp.echo(&quot;We've entered a new area: &quot; .. protocol.area)
+        end
+        echo '\n'
+        if dir then
+          connect_rooms(mmp.currentroom, newID, dir)
+        end
+        setRoomCoordinates(newID, unpack(coords))
+        local stretched = false
+        if mmp.settings.stretchmap and table.size(getRoomsByPosition(mmp.currentarea, unpack(coords))) &gt; 1 then
+          speedwalking(newID)
+          stretched = true
+          stretch_map(dir, unpack(coords))
+        end
+        if mmp.settings.mode == 'simple' then
+          local x, y, z = unpack(coords)
+          local dx, dy, dz, rooms
+          for k, v in ipairs(exits) do
+            if v ~= dir then
+              dx, dy, dz = unpack(coordmap[stubmap[v]])
+              rooms = getRoomsByPosition(mmp.currentarea, x + dx, y + dy, z + dz)
+              if table.size(rooms) == 1 then
+                connect_rooms(newID, rooms[0], v)
+              end
+            end
+          end
+        end
+        if not stretched then
+          speedwalking(newID)
+        end
       end
-    end
-    if not stretched then speedwalking(newID) end
+    )
   end
 end
 
@@ -5352,8 +5376,8 @@ end
 local function keystolist(t)
   local r = {}
 
-  for k,_ in pairs(t) do
-    r[#r+1] = k
+  for k, _ in pairs(t) do
+    r[#r + 1] = k
   end
 
   return r
