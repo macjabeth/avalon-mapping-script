@@ -739,7 +739,7 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
                 </Trigger>
                 <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
                     <name>sensor demon</name>
-                    <script>mmp.locateAndEcho(multimatches[2][3], multimatches[2][2])</script>
+                    <script>mmp.locateAndEchoInternal(multimatches[2][3], multimatches[2][2])</script>
                     <triggerType>0</triggerType>
                     <conditonLineDelta>0</conditonLineDelta>
                     <mStayOpen>0</mStayOpen>
@@ -753,6 +753,28 @@ echo '(' mmp.echonums(matches[2], matches[3]) echo ')'</script>
                     <regexCodeList>
                         <string>The sensor-demon informs you that </string>
                         <string>^The sensor-demon informs you that (.+) has moved to (.+)\.$</string>
+                    </regexCodeList>
+                    <regexCodePropertyList>
+                        <integer>2</integer>
+                        <integer>1</integer>
+                    </regexCodePropertyList>
+                </Trigger>
+                <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+                    <name>sensor ritual</name>
+                    <script>mmp.locateAndEchoInternal(multimatches[2][3], multimatches[2][2])</script>
+                    <triggerType>0</triggerType>
+                    <conditonLineDelta>0</conditonLineDelta>
+                    <mStayOpen>0</mStayOpen>
+                    <mCommand></mCommand>
+                    <packageName></packageName>
+                    <mFgColor>#ff0000</mFgColor>
+                    <mBgColor>#ffff00</mBgColor>
+                    <mSoundFile></mSoundFile>
+                    <colorTriggerFgColor>#000000</colorTriggerFgColor>
+                    <colorTriggerBgColor>#000000</colorTriggerBgColor>
+                    <regexCodeList>
+                        <string>You see an image of </string>
+                        <string>^You see an image of (.+) moving to (.+)\.$</string>
                     </regexCodeList>
                     <regexCodePropertyList>
                         <integer>2</integer>
@@ -3337,7 +3359,7 @@ end</script>
   if area then t = mmp.filterRoomsByArea(area, t) end
 
   echo '  ('
-  mmp.echonums(room, true)
+  mmp.echonums(room, area, true)
   echo ')'
 
   -- lowercase results
@@ -3439,7 +3461,7 @@ end</script>
   end
 
   echo '  ('
-  mmp.echonums(room, true)
+  mmp.echonums(room, area, true)
   echo ')'
 
   if person then
